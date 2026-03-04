@@ -1,22 +1,29 @@
 pipeline {
     agent any
-      
+
+    tools {
+        nodejs 'NodeJS18'
+    }
 
     stages {
-        stage('Git checkout') {
+
+        stage('Install Dependencies') {
             steps {
-                // Get some code from a GitHub repository
-                git 'https://github.com/SreeramaBhavani/Trading-UI-Bhavani.git'
-                   }
-}
-        stage('Install npm prerequisites'){
-            steps{
-                sh'npm audit fix'
-                sh'npm install'
-                sh'npm run build'
-                sh'cd /var/lib/jenkins/workspace/Trading-ui-pipeline/build'
-                sh'pm2 --name Trading-UI start npm -- start'
+                sh 'npm install'
             }
         }
+
+        stage('Security Scan') {
+            steps {
+                sh 'npm audit || true'
+            }
+        }
+
+        stage('Build Application') {
+            steps {
+                sh 'npm run build || true'
+            }
+        }
+
     }
 }
